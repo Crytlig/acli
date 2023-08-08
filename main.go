@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	pkgs "main/pkg"
+	lib "main/lib"
 	"os"
 
 	cli "github.com/urfave/cli/v2"
@@ -24,7 +24,7 @@ func main() {
 			{
 				Name:   "models",
 				Usage:  "Lists the available models. Defaults to using gpt-3.5-turbo-0613",
-				Action: pkgs.AvailableModels,
+				Action: lib.AvailableModels,
 			},
 			{
 				Name:      "query",
@@ -50,5 +50,5 @@ func main() {
 func processQuery(c *cli.Context) error {
 	query := c.Args().First()
 	debugMode := c.Bool(DebugFlag)
-	return pkgs.HandleRequest(c, query, debugMode)
+	return lib.HandleRequest(c, query, debugMode)
 }
