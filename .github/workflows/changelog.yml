@@ -1,8 +1,9 @@
 name: CI - Changelog
 
 on:
-  push:
-    branches: [main]
+  pull_request:
+    branches:
+    - main
  
 jobs:
   changelog_prerelease:
