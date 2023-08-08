@@ -6,6 +6,7 @@
 
 **Merged pull requests:**
 
+- Updated workflows [\#2](https://github.com/Crytlig/acli/pull/2) ([Crytlig](https://github.com/Crytlig))
 - Add changelog and workflows [\#1](https://github.com/Crytlig/acli/pull/1) ([Crytlig](https://github.com/Crytlig))
 
 
