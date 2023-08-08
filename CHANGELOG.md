@@ -1,8 +1,8 @@
 # Changelog
 
-## [Unreleased](https://github.com/Crytlig/acli/tree/HEAD)
+## [0.0.1](https://github.com/Crytlig/acli/tree/0.0.1) (2023-08-08)
 
-[Full Changelog](https://github.com/Crytlig/acli/compare/5c99437f61b4eb16aba9cf7285dad47f929b044d...HEAD)
+[Full Changelog](https://github.com/Crytlig/acli/compare/5c99437f61b4eb16aba9cf7285dad47f929b044d...0.0.1)
 
 **Merged pull requests:**
 
