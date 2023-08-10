@@ -8,8 +8,8 @@ import (
 	cli "github.com/urfave/cli/v2"
 )
 
-const (
-	Version   = "0.0.1"
+var (
+	Version   = "0.0.2"
 	DebugFlag = "debug"
 )
 
