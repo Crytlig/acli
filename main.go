@@ -2,14 +2,15 @@ package main
 
 import (
 	"log"
-	lib "main/lib"
 	"os"
+
+	"github.com/crytlig/acli/lib"
 
 	cli "github.com/urfave/cli/v2"
 )
 
-const (
-	Version   = "0.0.1"
+var (
+	Version   = "0.0.2"
 	DebugFlag = "debug"
 )
 

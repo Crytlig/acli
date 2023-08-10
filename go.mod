@@ -1,4 +1,4 @@
-module main
+module github.com/crytlig/acli
 
 go 1.20
 
