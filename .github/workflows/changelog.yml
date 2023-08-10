@@ -1,9 +1,9 @@
 name: CI - Changelog
 
 on:
-  release:
-    types:
-      - created
+  push:
+    branches:
+      - main
 
 jobs:
   changelog_prerelease:

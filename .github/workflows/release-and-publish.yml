@@ -3,9 +3,9 @@ name: release-and-publish
 on: 
   push:
     branches:
-      - 'main'
+      - main
     paths:
-      - 'CHANGELOG.md'
+      - CHANGELOG.md
 
 jobs:
   create-release:
@@ -31,7 +31,7 @@ jobs:
         run: |
           echo "Version: ${{ steps.changelog_reader.outputs.version }}"
           echo "Changes: ${{ steps.changelog_reader.outputs.changes }}"
-          echo "DRAFT_VERSION=${{ steps.changelog_reader.outputs.version }}" >> $GITHUB_ENV
+          echo "ACLI_VERSION=${{ steps.changelog_reader.outputs.version }}" >> $GITHUB_ENV
 
       - name: Make Release Dir
         run: mkdir bin
@@ -62,7 +62,7 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
-          tag_name : "v${{ steps.changelog_reader.outputs.version }}"
+          tag_name: "v${{ steps.changelog_reader.outputs.version }}"
           name: "v${{ steps.changelog_reader.outputs.version }}"
           body: ${{ steps.changelog_reader.outputs.changes }}
           
@@ -73,7 +73,7 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
-          tag_name : "v${{ steps.changelog_reader.outputs.version }}"
+          tag_name: "v${{ steps.changelog_reader.outputs.version }}"
           name: "v${{ steps.changelog_reader.outputs.version }}"
           body: ${{ steps.changelog_reader.outputs.changes }}
           # token: ${{ github.token }}
