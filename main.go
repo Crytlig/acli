@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/crytlig/lib"
 	"log"
 	"os"
+
+	"github.com/crytlig/acli/lib"
 
 	cli "github.com/urfave/cli/v2"
 )

@@ -38,6 +38,8 @@ jobs:
         id: check-tag-exists
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{  github.ref_name }}
  
       # Build Binaries if this is a new release
       - name: Build ACLI Release Binaries
