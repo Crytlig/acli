@@ -1,4 +1,4 @@
-package pkg
+package lib
 
 import (
 	"bytes"
@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/urfave/cli/v2"
+	"golang.design/x/clipboard"
 )
 
 func HandleRequest(c *cli.Context, query string, debugMode bool) error {
@@ -66,6 +67,14 @@ func HandleRequest(c *cli.Context, query string, debugMode bool) error {
 			log.
 				Fatalf("Retry failed: %v", err)
 		}
+	case "Copy to clipboard":
+		// TODO: Add to clipboard
+		err := clipboard.Init()
+		if err != nil {
+			panic(err)
+		}
+		clipboard.Write(clipboard.FmtText, []byte(aiCmd))
+
 	// User presses q to quit
 	case "":
 		os.Exit(0)

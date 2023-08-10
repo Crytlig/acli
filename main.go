@@ -2,14 +2,15 @@ package main
 
 import (
 	"log"
-	pkgs "main/pkg"
 	"os"
+
+	"github.com/crytlig/acli/lib"
 
 	cli "github.com/urfave/cli/v2"
 )
 
-const (
-	Version   = "0.0.1"
+var (
+	Version   = "0.0.2"
 	DebugFlag = "debug"
 )
 
@@ -24,7 +25,7 @@ func main() {
 			{
 				Name:   "models",
 				Usage:  "Lists the available models. Defaults to using gpt-3.5-turbo-0613",
-				Action: pkgs.AvailableModels,
+				Action: lib.AvailableModels,
 			},
 			{
 				Name:      "query",
@@ -50,5 +51,5 @@ func main() {
 func processQuery(c *cli.Context) error {
 	query := c.Args().First()
 	debugMode := c.Bool(DebugFlag)
-	return pkgs.HandleRequest(c, query, debugMode)
+	return lib.HandleRequest(c, query, debugMode)
 }
