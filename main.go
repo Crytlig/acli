@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/crytlig/lib"
 	"log"
-	lib "main/lib"
 	"os"
 
 	cli "github.com/urfave/cli/v2"
