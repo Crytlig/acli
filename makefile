@@ -9,6 +9,7 @@ build:
 .PHONY: build-all
 build-all: vendor build-windows-amd64 build-linux-amd64 build-linux-arm64 build-darwin-amd64 build-darwin-arm64
 
+# TODO: Fix go build. Seems like the main.Version is not overwritten
 .PHONY: build-windows-amd64
 build-windows-amd64:
 	GOOS=windows GOARCH=amd64 go build -ldflags "-X github.com/Crytlig/acli/main.Version=${ACLI_VERSION}" -v -o ./bin/acli-windows-amd64.exe
