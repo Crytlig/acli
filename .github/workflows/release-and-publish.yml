@@ -2,10 +2,8 @@ name: release-and-publish
 
 on: 
   push:
-    branches:
-      - main
-    paths:
-      - CHANGELOG.md
+    tags:
+      - v*.*.*
 
 jobs:
   create-release:
@@ -17,21 +15,14 @@ jobs:
 
       - uses: actions/checkout@v3
      
-      - name: Check version is mentioned in Changelog.md
-        id: changelog_reader
-        uses: mindsers/changelog-reader-action@v2
-        with:
-          validation_depth: 10
-          path: './CHANGELOG.md'
-
       - name: Set up Go
         uses: actions/setup-go@v4
       
-      - name: Set the draft version value and print other values.
+      - name: Set version from main.go
         run: |
-          echo "Version: ${{ steps.changelog_reader.outputs.version }}"
-          echo "Changes: ${{ steps.changelog_reader.outputs.changes }}"
-          echo "ACLI_VERSION=${{ steps.changelog_reader.outputs.version }}" >> $GITHUB_ENV
+          version=$(cat main.go | awk -F'"' '/Version/ {print $2}')
+          echo "Version: $version"
+          echo "ACLI_VERSION=$version" >> $GITHUB_ENV
 
       - name: Make Release Dir
         run: mkdir bin
@@ -45,8 +36,6 @@ jobs:
       - name: Check if tag exist
         uses: mukunku/tag-exists-action@9afafd1bf326f2957ca13d67122d44d5681e432b
         id: check-tag-exists
-        with: 
-          tag:  "v${{ steps.changelog_reader.outputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
  
@@ -54,18 +43,7 @@ jobs:
       - name: Build ACLI Release Binaries
         run: make build-all
         if: ${{ steps.check-tag-exists.outputs.exists == 'false' }}
-        
-      # If the tag already exists, don't upload release artifacts
-      - name: Update ACLI Release Body
-        if: ${{ steps.check-tag-exists.outputs.exists == 'true' }}
-        uses: softprops/action-gh-release@v1
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        with:
-          tag_name: "v${{ steps.changelog_reader.outputs.version }}"
-          name: "v${{ steps.changelog_reader.outputs.version }}"
-          body: ${{ steps.changelog_reader.outputs.changes }}
-          
+         
       # Create Release with artifacts
       - name: Create ACLI Release
         if: ${{ steps.check-tag-exists.outputs.exists == 'false'}}
@@ -73,10 +51,6 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
-          tag_name: "v${{ steps.changelog_reader.outputs.version }}"
-          name: "v${{ steps.changelog_reader.outputs.version }}"
-          body: ${{ steps.changelog_reader.outputs.changes }}
-          # token: ${{ github.token }}
-          # generate_release_notes: true
+          generate_release_notes: true
           files: |
             ./bin/*
