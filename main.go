@@ -5,20 +5,18 @@ import (
 	"os"
 
 	"github.com/crytlig/acli/lib"
+	"github.com/crytlig/acli/version"
 
 	cli "github.com/urfave/cli/v2"
 )
 
-var (
-	Version   = "0.0.2"
-	DebugFlag = "debug"
-)
+var DebugFlag = "debug"
 
 // TODO Add flag for choosing model
 func main() {
 	app := &cli.App{
 		Name:      "acli",
-		Version:   Version,
+		Version:   version.Version,
 		Usage:     "Use acli to query a tool if you have forgotten a command or simply need help.",
 		UsageText: "Example usage for Azure CLI.\nacli query 'get application id of app registration myapp123'",
 		Commands: []*cli.Command{
