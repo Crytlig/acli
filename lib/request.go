@@ -68,7 +68,6 @@ func HandleRequest(c *cli.Context, query string, debugMode bool) error {
 				Fatalf("Retry failed: %v", err)
 		}
 	case "Copy to clipboard":
-		// TODO: Add to clipboard
 		err := clipboard.Init()
 		if err != nil {
 			panic(err)
