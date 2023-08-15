@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/crytlig/acli/bubble"
 	"log"
 	"os"
 	"os/exec"
@@ -37,11 +38,11 @@ func HandleRequest(c *cli.Context, query string, debugMode bool) error {
 	}
 
 	aiCmd := cliCmd["short_and_concise"]
-	AcceptInput(fmt.Sprintf("Suggested: %s", aiCmd))
+	bubble.AcceptInput(fmt.Sprintf("Suggested: %s", aiCmd))
 
 	var cmd *exec.Cmd
 
-	switch UserChoice {
+	switch bubble.UserChoice {
 	case "Accept":
 		cliName := strings.Split(aiCmd, " ")[0]
 		cliPath, err := exec.LookPath(cliName)
@@ -74,12 +75,17 @@ func HandleRequest(c *cli.Context, query string, debugMode bool) error {
 		}
 		clipboard.Write(clipboard.FmtText, []byte(aiCmd))
 
+	case "Rephrase":
+		// bubble.InitializeText()
+		prevQuery := fmt.Sprintf("Previous query: %s", query)
+		bubble.RephraseInput(prevQuery)
+		fmt.Printf("Your rephrased input: %s\n", bubble.UserText)
 	// User presses q to quit
 	case "":
 		os.Exit(0)
 	// Add default. Yet to be encountered
 	default:
-		log.Fatalf("Unsupported user choice: %s", UserChoice)
+		log.Fatalf("Unsupported user choice: %s", bubble.UserChoice)
 	}
 	return nil
 }

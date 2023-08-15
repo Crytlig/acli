@@ -1,4 +1,4 @@
-package lib
+package bubble
 
 import (
 	"fmt"
@@ -55,17 +55,17 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 	fmt.Fprint(w, fn(str))
 }
 
-type model struct {
+type listModel struct {
 	list     list.Model
 	choice   string
 	quitting bool
 }
 
-func (m model) Init() tea.Cmd {
+func (m listModel) Init() tea.Cmd {
 	return nil
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.list.SetWidth(msg.Width)
@@ -98,7 +98,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m model) View() string {
+func (m listModel) View() string {
 	if m.choice != "" {
 		return m.choice
 	}
@@ -108,11 +108,12 @@ func (m model) View() string {
 	return "\n" + m.list.View()
 }
 
-func AcceptInput(title string) model {
+func AcceptInput(title string) listModel {
 	items := []list.Item{
 		item("Accept"),
-		item("Retry"),
 		item("Copy to clipboard"),
+		item("Retry"),
+		item("Rephrase"),
 	}
 
 	const defaultWidth = 20
@@ -124,7 +125,7 @@ func AcceptInput(title string) model {
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 
-	m := model{list: l}
+	m := listModel{list: l}
 	if _, err := tea.NewProgram(m).Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
