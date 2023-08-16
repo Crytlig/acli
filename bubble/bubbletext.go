@@ -31,6 +31,7 @@ type (
 type textModel struct {
 	textInput textinput.Model
 	err       error
+	quitting  *bool
 }
 
 func initialModel() textModel {
@@ -43,6 +44,7 @@ func initialModel() textModel {
 	return textModel{
 		textInput: ti,
 		err:       nil,
+		quitting:  &Quitting,
 	}
 }
 
@@ -53,6 +55,10 @@ func (m textModel) Init() tea.Cmd {
 func (m textModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
+	if *m.quitting {
+		return m, tea.Quit
+	}
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
@@ -61,6 +67,7 @@ func (m textModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case tea.KeyCtrlC, tea.KeyEsc:
+			*m.quitting = true
 			return m, tea.Quit
 		}
 
@@ -74,6 +81,9 @@ func (m textModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m textModel) View() string {
+	if *m.quitting {
+		return ""
+	}
 	return fmt.Sprintf(
 		"%s\n\n",
 		m.textInput.View()) + "\n"

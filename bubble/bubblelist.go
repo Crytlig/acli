@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -17,7 +16,7 @@ const listHeight = 10
 // global variable for exiting TUI and still having the choice available
 var (
 	UserChoice string
-	Quitting   string
+	Quitting   bool
 )
 
 var (
@@ -58,7 +57,7 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 type listModel struct {
 	list     list.Model
 	choice   string
-	quitting bool
+	quitting *bool
 }
 
 func (m listModel) Init() tea.Cmd {
@@ -74,13 +73,11 @@ func (m listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch keypress := msg.String(); keypress {
 		case "ctrl+c":
-			m.quitting = true
-			Quitting = strconv.FormatBool(m.quitting)
+			*m.quitting = true
 			return m, tea.Quit
 
 		case "q":
-			m.quitting = true
-			Quitting = strconv.FormatBool(m.quitting)
+			*m.quitting = true
 			return m, tea.Quit
 
 		case "enter":
@@ -102,7 +99,7 @@ func (m listModel) View() string {
 	if m.choice != "" {
 		return m.choice
 	}
-	if m.quitting {
+	if *m.quitting {
 		return ""
 	}
 	return "\n" + m.list.View()
@@ -125,7 +122,7 @@ func AcceptInput(title string) listModel {
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 
-	m := listModel{list: l}
+	m := listModel{list: l, quitting: &Quitting}
 	if _, err := tea.NewProgram(m).Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
