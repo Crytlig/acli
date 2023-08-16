@@ -10,11 +10,20 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/crytlig/acli/bubble"
+
 	"github.com/urfave/cli/v2"
 	"golang.design/x/clipboard"
 )
 
 func HandleRequest(c *cli.Context, query string, debugMode bool) error {
+	// Handle recursive calls
+	quitting := bubble.Quitting
+
+	if quitting {
+		return nil
+	}
+
 	apiKey, err := LoadApiKey()
 	if err != nil {
 		log.Fatalf("Failed to load API key: %v", err)
@@ -37,11 +46,11 @@ func HandleRequest(c *cli.Context, query string, debugMode bool) error {
 	}
 
 	aiCmd := cliCmd["short_and_concise"]
-	AcceptInput(fmt.Sprintf("Suggested: %s", aiCmd))
+	bubble.AcceptInput(fmt.Sprintf("Suggested: %s", aiCmd))
 
 	var cmd *exec.Cmd
 
-	switch UserChoice {
+	switch bubble.UserChoice {
 	case "Accept":
 		cliName := strings.Split(aiCmd, " ")[0]
 		cliPath, err := exec.LookPath(cliName)
@@ -64,22 +73,35 @@ func HandleRequest(c *cli.Context, query string, debugMode bool) error {
 		executeCommand(cmd, debugMode)
 	case "Retry":
 		if err := HandleRequest(c, c.Args().First(), debugMode); err != nil {
-			log.
-				Fatalf("Retry failed: %v", err)
+			log.Fatalf("Retry failed: %v", err)
 		}
+
 	case "Copy to clipboard":
 		err := clipboard.Init()
 		if err != nil {
 			panic(err)
 		}
 		clipboard.Write(clipboard.FmtText, []byte(aiCmd))
+	case "Rephrase":
+		bubble.UserTextInputs.PrevQuery = query
+		bubble.RephraseInput()
+		// We have to check again to ensure we're not forcing another recursive call since multiple TUIs are opened
+		// if the user asks for rephrasing twice or thrice or more
+		if bubble.Quitting {
+			return nil
+		}
+
+		if err := HandleRequest(c, bubble.UserTextInputs.UserText, debugMode); err != nil {
+			log.Fatalf("Rephrase failed: %v", err)
+		}
+		return nil
 
 	// User presses q to quit
 	case "":
 		os.Exit(0)
 	// Add default. Yet to be encountered
 	default:
-		log.Fatalf("Unsupported user choice: %s", UserChoice)
+		log.Fatalf("Unsupported user choice: %s", bubble.UserChoice)
 	}
 	return nil
 }

@@ -1,10 +1,9 @@
-package lib
+package bubble
 
 import (
 	"fmt"
 	"io"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -17,7 +16,7 @@ const listHeight = 10
 // global variable for exiting TUI and still having the choice available
 var (
 	UserChoice string
-	Quitting   string
+	Quitting   bool
 )
 
 var (
@@ -55,17 +54,17 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 	fmt.Fprint(w, fn(str))
 }
 
-type model struct {
+type listModel struct {
 	list     list.Model
 	choice   string
-	quitting bool
+	quitting *bool
 }
 
-func (m model) Init() tea.Cmd {
+func (m listModel) Init() tea.Cmd {
 	return nil
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.list.SetWidth(msg.Width)
@@ -74,13 +73,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch keypress := msg.String(); keypress {
 		case "ctrl+c":
-			m.quitting = true
-			Quitting = strconv.FormatBool(m.quitting)
+			*m.quitting = true
 			return m, tea.Quit
 
 		case "q":
-			m.quitting = true
-			Quitting = strconv.FormatBool(m.quitting)
+			*m.quitting = true
 			return m, tea.Quit
 
 		case "enter":
@@ -98,21 +95,22 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m model) View() string {
+func (m listModel) View() string {
 	if m.choice != "" {
 		return m.choice
 	}
-	if m.quitting {
+	if *m.quitting {
 		return ""
 	}
 	return "\n" + m.list.View()
 }
 
-func AcceptInput(title string) model {
+func AcceptInput(title string) listModel {
 	items := []list.Item{
 		item("Accept"),
-		item("Retry"),
 		item("Copy to clipboard"),
+		item("Retry"),
+		item("Rephrase"),
 	}
 
 	const defaultWidth = 20
@@ -124,7 +122,7 @@ func AcceptInput(title string) model {
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 
-	m := model{list: l}
+	m := listModel{list: l, quitting: &Quitting}
 	if _, err := tea.NewProgram(m).Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
