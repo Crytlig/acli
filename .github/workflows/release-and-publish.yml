@@ -20,7 +20,7 @@ jobs:
       
       - name: Set version from go to makefile
         run: |
-          version=$(cat main.go | awk -F'"' '/Version/ {print $2}')
+          version=$(cat version/version.go | awk -F'"' '/Version/ {print $2}')
           echo "Version: $version"
           echo "ACLI_VERSION=$version" >> $GITHUB_ENV
 
