@@ -76,10 +76,15 @@ func HandleRequest(c *cli.Context, query string, debugMode bool) error {
 		clipboard.Write(clipboard.FmtText, []byte(aiCmd))
 
 	case "Rephrase":
-		// bubble.InitializeText()
-		prevQuery := fmt.Sprintf("Previous query: %s", query)
-		bubble.RephraseInput(prevQuery)
-		fmt.Printf("Your rephrased input: %s\n", bubble.UserText)
+		bubble.UserTextInputs.PrevQuery = query
+		// fmt.Sprintf("Previous query: %s", query)
+		bubble.RephraseInput()
+
+		if err := HandleRequest(c, bubble.UserTextInputs.UserText, debugMode); err != nil {
+			log.
+				Fatalf("Retry failed: %v", err)
+		}
+
 	// User presses q to quit
 	case "":
 		os.Exit(0)

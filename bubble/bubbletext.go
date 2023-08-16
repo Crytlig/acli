@@ -9,10 +9,15 @@ import (
 )
 
 var (
-	UserText string
+	UserTextInputs UserInput
 )
 
-func RephraseInput(placeholder string) {
+type UserInput struct {
+	UserText  string
+	PrevQuery string
+}
+
+func RephraseInput() {
 	p := tea.NewProgram(initialModel())
 	if _, err := p.Run(); err != nil {
 		log.Fatal(err)
@@ -30,10 +35,10 @@ type textModel struct {
 
 func initialModel() textModel {
 	ti := textinput.New()
-	ti.Placeholder = ""
+	ti.Placeholder = "Rephrase your query"
 	ti.Focus()
-	ti.CharLimit = 156
-	ti.Width = 20
+	ti.CharLimit = 150
+	ti.Width = 200
 
 	return textModel{
 		textInput: ti,
@@ -52,7 +57,7 @@ func (m textModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyEnter:
-			UserText = m.textInput.Value()
+			UserTextInputs.UserText = m.textInput.Value()
 			return m, tea.Quit
 
 		case tea.KeyCtrlC, tea.KeyEsc:
@@ -70,6 +75,6 @@ func (m textModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m textModel) View() string {
 	return fmt.Sprintf(
-		"What’s your favorite Pokémon?\n\n%s\n",
+		"%s\n\n",
 		m.textInput.View()) + "\n"
 }
